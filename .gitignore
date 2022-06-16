@@ -1,0 +1,6 @@
+data/
+plugin/layer_norm_plugin.d
+.idea/
+*/__pycache__/
+__pycache__/
+./*/__pycache__/

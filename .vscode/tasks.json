@@ -1,0 +1,75 @@
+{
+  "tasks": [
+    {
+      "type": "cppbuild",
+      "label": "cuda_build",
+      "command": "nvcc",
+      "args": [
+        "-g",
+				"-G", // GPU Debug用，可以忽略
+        "-arch=sm_80", // 3090专用，具体你要查询一下你的算力的大小
+        "-rdc=true", // 开启动态并行功能，开启后可以在核函数中递归调用
+        "${file}",
+        "-std=c++14",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}",
+        "-I",
+        "/usr/local/cuda/include",
+        "-L",
+        "/usr/local/cuda/lib64",
+        "-l",
+        "cudart",
+        "-l",
+        "nvinfer",
+        // "--compiler-bindir", 
+        // "/usr/bin/g++-9",  // 指定g++-9，防止不兼容
+        "-l",
+        "nvinfer_plugin", // 加载插件用
+        //"-I",
+        // "/usr/local/onnx/include",
+        "-l",
+        "nvonnxparser",
+        "-I",
+        "/usr/local/cub", // 自行下载cub到对应目录(貌似cuda自带了，可以不用)
+        //"-D",
+        //"ONNX_ML",
+        "-L${fileDirname}/plugin",
+        "-llayer_norm_plugin",  // 用于c++程序测试layerNorm用
+        // 加上这个防止代码不执行
+        "&&",
+        "${fileDirname}/${fileBasenameNoExtension}"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared", // 可选new
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        "$nvcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "调试器生成的任务。"
+    },
+    // // 建一个新任务运行结果(不然MAC没有输出)(可以不用填了)
+    // {
+    //   "type": "shell",
+    //   "label": "run output file",
+    //   "dependsOn": "cuda_build",
+    //   "command": "${fileDirname}/${fileBasenameNoExtension}",
+    //   "group": {
+    //     "kind": "build",
+    //     "isDefault": true
+    //   },
+    // }
+  ],
+  "version": "2.0.0"
+}
